@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T00:12:39.714Z",
+  "generated_at": "2026-11-07T17:50:59.750Z",
   "items": {
     "problem:1011": {
       "kind": "problem",
@@ -10,9 +10,9 @@
       "url": "https://www.deep-ml.com/problems/1011",
       "path": "problems/1011-pre-allocated-sliding-kv-cache-update",
       "first_solved_at": "2026-11-06T00:12:34.518Z",
-      "last_pushed_at": "2026-11-06T00:12:34.518Z",
+      "last_pushed_at": "2026-11-07T17:50:59.089Z",
       "language": "python",
-      "lines": 71
+      "lines": 72
     }
   }
 }

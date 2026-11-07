@@ -16,38 +16,36 @@ def sliding_kv_cache_update(cache_k, cache_v, current_len, new_k, new_v, window_
     Returns:
         dict with keys 'cache_k', 'cache_v', 'current_len', 'mask'.
     """
-    new_len =np.shape(new_k)[2]
-    updated_len = min(current_len + new_len, window_size)
-    cache_k = np.array(cache_k, dtype = float, copy=True)
-    cache_v = np.array(cache_v, dtype = float, copy=True)
+    #list(batch, num_heads, window_size, head_dim)
+    #list(batch, num_heads, len, head_idm)
+    cache_k = np.array(cache_k, dtype=float, copy=True)
+    cache_v = np.array(cache_v, dtype=float, copy=True)
     new_k = np.array(new_k)
     new_v = np.array(new_v)
+    new_len = new_k.shape[2]
+    updated_len = min(current_len + new_len, window_size)
 
-    mask = []
-     # Update cache
     valid_len = current_len
 
     for i in range(new_len):
-        # it is preallocated so it is always equal to window size
-        current_position = max(updated_len - new_len + i, 0)
-
-        if valid_len < window_size: 
-            # Insert into next available position
-            cache_k[:, :, valid_len, :] = new_k[:, :, i, :]
-            cache_v[:, :, valid_len, :] = new_v[:, :, i, :]
+        if valid_len < window_size:
+            cache_k[:,:, valid_len, :] = new_k[:,:,i,:]
+            cache_v[:,:, valid_len,:] = new_v[:,:,i,:]
             valid_len += 1
+
         else:
-             # Shift old tokens left
-            cache_k[:, :, :-1, :] = cache_k[:, :, 1:, :].copy()
-            cache_v[:, :, :-1, :] = cache_v[:, :, 1:, :].copy()
+            #pop 
+            cache_k[:,:, :-1, :] = cache_k[:,:,1:,:].copy()
+            cache_v[:,:, :-1, :] = cache_v[:,:,1:,:].copy()
 
-             # Insert newest token
-            cache_k[:, :, -1, :] = new_k[:, :, i, :]
-            cache_v[:, :, -1, :] = new_v[:, :, i, :]
+            #insert
+            cache_k[:,:,-1,:] = new_k[:,:,i,:]
+            cache_v[:,:,-1,:] = new_v[:,:,i,:]
 
+    
     mask = []
     for i in range(new_len):
-        current_position = max(updated_len - new_len + i, 0)
+        current_position = max(updated_len - new_len + i , 0)
         row = []
 
         for j in range(updated_len):
@@ -55,14 +53,17 @@ def sliding_kv_cache_update(cache_k, cache_v, current_len, new_k, new_v, window_
                 row.append(1)
             else:
                 row.append(0)
+
         mask.append(row)
-    
-    return{
-        'cache_k':cache_k.tolist(),
-        'cache_v':cache_v.tolist(),
-        'current_len':updated_len,
-        'mask':mask
+
+    return {
+        "cache_k": cache_k.tolist(),
+        "cache_v": cache_v.tolist(),
+        "current_len": updated_len,
+        "mask": mask
     }
+
+
 
 
 
